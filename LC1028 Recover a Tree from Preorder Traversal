@@ -1,0 +1,96 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    
+    #solution 3:
+    def recoverFromPreorder(self, s):
+        
+        levels = {-1: TreeNode(0)}
+        
+        i = 0
+        while i < len(s):
+            
+            curD, curNum = 0, 0
+            while i < len(s) and s[i] == '-':
+                curD += 1
+                i += 1
+                
+            while i < len(s) and s[i].isdigit():
+                
+                curNum = curNum * 10 + int(s[i])
+                i += 1
+                
+            curNode = TreeNode(curNum)
+            
+            levels[curD] = curNode
+            
+            if curD > 0:
+                parent = levels[curD - 1]
+                if not parent.left:
+                    parent.left = curNode
+                    
+                else:
+                    parent.right = curNode
+                    
+        return levels[0]
+    
+     #solution 2:
+    def recoverFromPreorder(self, s):
+        
+        self.index = 0
+        
+        def dfs(depth):
+            
+            if self.index == len(s):
+                return
+            
+            for i in range(depth):
+                if s[self.index + i] != '-':
+                    return
+                
+            self.index += depth
+            
+            curr = 0
+            
+            while self.index < len(s) and s[self.index].isdigit():
+                curr = curr * 10 + int(s[self.index])
+                self.index += 1
+                
+            node = TreeNode(curr)
+            node.left = dfs(depth + 1)
+            node.right = dfs(depth + 1)
+            
+            return node
+        return dfs(0)
+    
+    # solution 1:
+    def recoverFromPreorder(self, S: str) -> TreeNode:
+       
+        stack, i = [], 0
+        while i < len(S):
+            level, val = 0, ''
+            while S[i] == '-':
+                level, i = level + 1, i + 1
+                
+            while i < len(S) and S[i] != '-':
+                val, i = val + S[i], i + 1
+                
+            while len(stack) > level:
+                stack.pop()
+                
+            node = TreeNode(val)
+                
+            if stack and stack[-1].left == None:
+                stack[-1].left = node
+                
+            elif stack:
+                stack[-1].right = node
+                
+            stack.append(node)
+            
+        return stack[0]
+            
