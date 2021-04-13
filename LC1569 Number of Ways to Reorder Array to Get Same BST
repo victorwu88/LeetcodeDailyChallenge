@@ -1,0 +1,29 @@
+class Solution:
+    def numOfWays(self, nums: List[int]) -> int:
+        
+        mod = 10 ** 9 + 7
+        
+        def ways_to_interleave(seq_1, seq_2):
+            
+            total_ways = len(seq_1) + len(seq_2)
+            things_to_choose = len(seq_1)
+            
+            return comb(total_ways, things_to_choose)  # not familiar with combination function in python
+        
+        def helper(subsequence):
+            if not subsequence:
+                return 1
+            
+            root_value = subsequence[0]
+            
+            left = [number for number in subsequence if number < root_value]
+            right = [number for number in subsequence if number > root_value]
+            
+            ways_to_arrange_left = helper(left)
+            ways_to_arrange_right = helper(right)
+            
+            return ways_to_arrange_left * ways_to_arrange_right * ways_to_interleave(left, right)
+        
+        return (helper(nums) - 1) % mod
+        
+        
