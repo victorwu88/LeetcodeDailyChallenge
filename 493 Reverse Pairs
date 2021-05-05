@@ -1,0 +1,94 @@
+class Solution(object):
+    
+    def merge(self, A, start, mid, end):
+        n1 = mid - start + 1
+        n2 = end - mid
+        l_subarr, r_subarr = [0] * n1, [0] * n2
+        
+        for i in range(n1):
+            l_subarr[i] = A[start + i]
+            
+        for j in range(n2):
+            r_subarr[j] = A[mid + 1 + j]
+            
+        i, j = 0, 0
+        for k in range(start, end + 1):
+            if j >= n2 or i < n1 and l_subarr[i] <= r_subarr[j]:  # notice i < n1 not <=
+                A[k] = l_subarr[i]
+                i += 1
+            else:
+                A[k] = r_subarr[j]
+                j += 1
+                
+    def mergesort_and_count(self, A, start, end):
+        
+        if start < end:
+            mid = (start + end) // 2
+            count = self.mergesort_and_count(A, start, mid) + self.mergesort_and_count(A, mid + 1, end)
+            j = mid + 1
+            for i in range(start, mid + 1):
+                while j <= end and A[i] > A[j] * 2:
+                    j += 1
+                    
+                count += j - (mid + 1)
+                
+            self.merge(A, start, mid, end)
+            return count
+        else:
+            return 0
+    def reversePairs(self, nums):
+        return self.mergesort_and_count(nums, 0, len(nums) - 1)
+    
+    
+ # solution 2:
+class TreeNode():
+    
+    def __init__(self, val, count_ge = 1):
+        self.left = None
+        self.right = None
+        self.val = val
+        self.count_ge = 1
+        
+class Solution(object):
+    
+    
+    def insert(self, head, val):
+        
+        if not head:
+            return TreeNode(val)
+        elif val == head.val:
+            head.count_ge += 1
+            
+        elif val < head.val:
+            head.left = self.insert(head.left, val)
+            
+        else:
+            head.count_ge += 1
+            head.right = self.insert(head.right, val)
+            
+        return head
+    
+    def search(self, head, target):
+        if not head:
+            return 0
+        elif target == head.val:
+            return head.count_ge
+        elif target < head.val:
+            return head.count_ge + self.search(head.left, target)
+        
+        else:
+            return self.search(head.right, target)
+        
+    def reversePairs(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        head = None
+        n = len(nums)
+        count = 0
+        for i in range(n):
+            count += self.search(head, nums[i] * 2 + 1)
+            head = self.insert(head, nums[i])
+            
+        return count
