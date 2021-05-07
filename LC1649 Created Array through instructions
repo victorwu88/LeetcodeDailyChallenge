@@ -1,0 +1,142 @@
+class Solution:
+    def createSortedArray(self, instructions: List[int]) -> int:
+          # implement Binary Index Tree
+        def update(index, value, bit, m):
+            index += 1
+            while index < m:
+                bit[index] += value
+                index += index & -index
+                
+                
+        def query(index, bit):
+            index += 1
+            result = 0
+            while index > 0:
+                result += bit[index]
+                index -= index & -index
+                
+            return result
+        
+        MOD = 10**9 + 7
+        m = max(instructions) + 2
+        bit = [0] * m
+        cost = 0
+        
+        n = len(instructions)
+        for i in range(n):
+            left_cost = query(instructions[i]-1, bit)
+            right_cost = i - query(instructions[i], bit)
+            cost += min(left_cost, right_cost)
+            update(instructions[i], 1, bit, m)
+            
+        return cost % MOD
+                
+      
+                
+    # solution 2 mergesort
+    # TLE 
+    
+        n = len(instructions)
+        smaller = [0] * n
+        larger = [0] * n
+        temp = [0] * n # record some temporary information
+        
+        def sort_smaller(arr, left, right):
+            if left == right:
+                return
+            mid = (left + right) // 2
+            sort_smaller(arr, left, mid)
+            sort_smaller(arr, mid + 1, right)
+            merge_smaller(arr, left, right, mid)
+            
+        def merge_smaller(arr, left, right, mid):
+            # merge[left, mid] and [mid+1, right]
+            i = left
+            j = mid + 1
+            k = left
+            
+            # use temp[left...right] to temporarily store sorted array
+            
+            while i <= mid and j <= right:
+                if arr[i][0] < arr[j][0]:
+                    temp[k] = arr[i]
+                    k += 1
+                    i += 1
+                    
+                else:
+                    temp[k] = arr[j]
+                    smaller[arr[j][1]] += i - left
+                    k += 1
+                    j += 1
+                    
+            while i <= mid:
+                temp[k] = arr[i]
+                k += 1
+                i += 1
+                
+            while j <= right:
+                temp[k] = arr[j]
+                smaller[arr[j][1]] += i - left # I don't understand this step
+                k += 1
+                j += 1
+                
+            # restore from temp
+            for i in range(left, right + 1):
+                arr[i] = temp[i]
+                
+                
+        def sort_larger(arr, left, right):
+            if left == right:
+                return 
+            mid = (left + right) // 2
+            sort_larger(arr, left, mid)
+            sort_larger(arr, mid + 1, right)
+            merge_larger(arr, left, right, mid)
+            
+        def merge_larger(arr, left, right, mid):
+            # merge[left, mid] and [mid + 1, right]
+            i = left
+            j = mid + 1
+            k = left
+            # use temp[left...right] to temporarily store sorted array
+            while i <= mid and j <= right:
+                if arr[i][0] <= arr[j][0]:
+                    temp[k] = arr[i]
+                    k += 1
+                    i += 1
+                    
+                else:
+                    temp[k] = arr[j]
+                    larger[arr[j][1]] += mid - i + 1
+                    
+                    k += 1
+                    j += 1
+                    
+            while i <= mid:
+                temp[k] = arr[i]
+                i += 1
+                k += 1
+                
+            while j <= right:
+                temp[k] = arr[j]
+                larger[arr[j][1]] += mid - i + 1 # hard to think
+                k += 1
+                j += 1
+                
+            # restore from temp
+            for i in range(left, right+1):
+                arr[i] = temp[i]
+                
+        MOD = 10 ** 9 + 7
+        cost = 0
+        arr_smaller = [[v,i] for i, v in enumerate(instructions)]
+        arr_larger = [[v, i] for i, v in enumerate(instructions)]
+        
+        sort_smaller(arr_smaller, 0, n - 1)
+        sort_larger(arr_larger, 0, n - 1)
+        
+        for i in range(n):
+            cost += min(smaller[i], larger[i])
+            
+        return cost % MOD
+                
