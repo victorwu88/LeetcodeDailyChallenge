@@ -1,0 +1,46 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def pathSum(self, root, targetSum):
+        
+        def preorder(node, cur_sum):
+            
+            nonlocal count
+            
+            if not node:
+                return
+            
+            # current prefix sum
+            cur_sum += node.val
+            
+            # the sum we're looking for
+            if cur_sum == targetSum:
+                count += 1
+                
+            # number of times the cur_sum - k has occurred already,
+            # determines the number of times a paht with sum k
+            # has occurred up to the current node
+            count += h[cur_sum - k]
+            
+            # add the current sum into hashmap
+            # to use it during the child nodes processing
+            h[cur_sum] += 1
+            
+            # process left subtree
+            preorder(node.left, cur_sum)
+            # process right subtree
+            preorder(node.right, cur_sum)
+            
+            # remove the cur sum from hashmap
+            # in order not to use it during the parallel subtree processing
+            h[cur_sum] -= 1
+            
+        count, k = 0, targetSum
+        h = defaultdict(int)
+        preorder(root, 0)
+        return count
