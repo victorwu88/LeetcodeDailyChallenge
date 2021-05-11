@@ -1,0 +1,35 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    
+    def recurseTree(self, node, remainingSum, pathNodes, pathsList):
+        
+        if not node:
+            return
+        
+        # add the current node to the path's list
+        pathNodes.append(node.val)
+        
+        # check if the current node is a leaf and also, if it 
+        # equals our remaining sum.  if it does, we add the path to 
+        # our list of paths
+        if remainingSum == node.val and not node.left and not node.right:
+            pathsList.append(list(pathNodes))
+            
+        else:
+            # Else, we will recurse on the left and the right children
+            self.recurseTree(node.left, remainingSum - node.val, pathNodes, pathsList)
+            self.recurseTree(node.right, remainingSum - node.val, pathNodes, pathsList)
+            
+        # we need to pop the node once we are done processing All of its subtrees
+        pathNodes.pop()
+    
+    def pathSum(self, root: TreeNode, targetSum: int) -> List[List[int]]:
+        pathsList = []
+        self.recurseTree(root, targetSum, [], pathsList)
+        return pathsList
+        
