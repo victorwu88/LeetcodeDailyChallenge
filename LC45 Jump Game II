@@ -1,0 +1,26 @@
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        # BFS:
+        q = collections.deque()
+        q.append((0, 0)) # idx, depth
+        
+        n = len(nums)
+        
+        visited = [False] * n
+        visited[0] = True
+        
+        while q:
+            node, depth = q.popleft()
+            
+            if node == n - 1:
+                return depth
+            
+            farthest = min(node + nums[node], n - 1)
+            
+            for i in range(node + 1, farthest + 1):
+                if not visited[i]:
+                    q.append((i, depth + 1))
+                    visited[i] = True
+                    
+        return -1
+        
