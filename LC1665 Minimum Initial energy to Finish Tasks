@@ -1,0 +1,21 @@
+class Solution:
+    def minimumEffort(self, tasks: List[List[int]]) -> int:
+       # solution 1:
+        tasks.sort(key = lambda a: a[1] - a[0])
+        res = 0
+        for a, m in tasks:
+            res = max(res + a, m)
+            
+        return res 
+    
+    # solution 2
+        tasks.sort(key = lambda a: a[0] - a[1])
+        res = cur = 0
+        for a, m in tasks:
+            if m > cur:
+                res += m - cur
+                cur = m
+            cur -= a
+
+        return res
+        
