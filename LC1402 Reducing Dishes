@@ -1,0 +1,24 @@
+class Solution:
+    def maxSatisfaction(self, satisfaction: List[int]) -> int:
+        res = total = 0
+        satisfaction.sort()
+        while satisfaction and satisfaction[-1] + total > 0:
+            total += satisfaction.pop()
+            res += total
+
+        return res
+    
+   
+    # solution 2:
+    def maxSatisfaction(self, satisfaction):
+        # sort largest to smallest
+        satisfaction.sort(reverse = True)
+        result, runningSum = 0, 0
+        for val in satisfaction:
+            runningSum += val
+            if runningSum < 0:
+                break
+            result += runningSum
+            
+        return result
+        
