@@ -1,0 +1,39 @@
+class Solution:
+    def maxNumOfSubstrings(self, s: str) -> List[str]:
+        
+        """
+        https://leetcode.com/problems/maximum-number-of-non-overlapping-substrings/discuss/744726/Python-Easy-to-Read-solution-with-explanation
+        """
+        # above link has one of the most elegant solution
+        ranges = collections.defaultdict(list)
+        for idx, ch in enumerate(s):
+            ranges[ch].append(idx)
+            
+        # step 2
+        for r in ranges:
+            left, right = ranges[r][0], ranges[r][-1] + 1
+            templ, tempr = left, right
+            
+            while True:
+                for ch in set(s[templ: tempr]):
+                    templ = min(templ, ranges[ch][0])
+                    tempr = max(tempr, ranges[ch][-1] + 1)
+                    
+                if (templ, tempr) == (left, right): break
+                    
+                left, right = templ, tempr
+                
+            ranges[r] = (templ, tempr)
+            
+        # step 3
+        sorted_ranges = sorted(ranges.values(), key = lambda pair: pair[1])
+        
+        ans, prev = [], 0
+        for start, end in sorted_ranges:
+            if start >= prev:
+                ans.append(s[start: end])
+                
+                prev = end # update prev!!!
+            
+        return ans
+        
