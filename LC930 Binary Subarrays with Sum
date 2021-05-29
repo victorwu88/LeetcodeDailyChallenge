@@ -1,0 +1,20 @@
+class Solution:
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+    #solution2
+        l = count = s = res = 0
+        for r, num in enumerate(nums):
+            s += num
+            if num == 1:
+                count = 0
+                
+            while l <= r and s >= goal:
+                if s == goal:
+                    count += 1
+                    
+                s -= nums[l]
+                l += 1
+                
+            res += count
+            
+        return res
+        
