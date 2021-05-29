@@ -1,0 +1,17 @@
+class Solution:
+    def longestAwesome(self, s: str) -> int:
+        res, cur = 0, 0
+        seen = {0:-1}
+        for i, c in enumerate(s):
+            cur ^= 1 << int(c)
+            if cur not in seen:
+                seen[cur] = i
+                
+            res = max(res, i - seen[cur])
+            
+            for a in range(10):
+                if cur ^(1 << a) in seen:
+                    res = max(res, i - seen[cur ^(1 << a)])
+                    
+        return res
+        
