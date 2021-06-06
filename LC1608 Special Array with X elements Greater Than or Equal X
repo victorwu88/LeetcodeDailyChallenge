@@ -1,0 +1,40 @@
+class Solution:
+    def specialArray(self, nums: List[int]) -> int:
+        n = len(nums)
+        nums.sort(reverse = True)
+        i = 0
+        while i < n and nums[i] > i:
+            i += 1
+            
+        return -1 if i < n and i == nums[i] else i
+    
+    # solution2 binary search
+    
+    def specialArray(self, nums):
+        n = len(nums)
+        nums.sort(reverse = True)
+        left, right = 0, n
+        while left < right:
+            mid = left + (right - left) // 2
+            if mid < nums[mid]:
+                left = mid + 1
+                
+            else:
+                right = mid
+                
+        return -1 if left < n and left == nums[left] else left
+
+    
+    
+    #solution 3
+    def specialArray(self, nums: List[int]) -> int:
+        nums.sort()
+        left, right = 0, len(nums)
+        while left <= right:
+            mid = (left + right) // 2
+            loc = bisect_left(nums, mid)
+            if len(nums) - loc == mid: return mid
+            elif len(nums) - loc > mid: left = mid + 1
+            else: right = mid - 1
+        return -1
+        
