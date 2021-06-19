@@ -1,0 +1,66 @@
+class Solution:
+    def busiestServers(self, k, arrival, load):
+        res = [0] * k
+        available = list(range(k)) # already in a min-heap
+        busy = []
+        for i, a in enumerate(arrival):
+            while busy and busy[0][0] <= a:
+                _, x = heapq.heappop(busy)
+                heapq.heappush(available, i + (x - i) % k)
+                
+            if available:
+                j = heapq.heappop(available) % k
+                heapq.heappush(busy, (a + load[i], j))
+                res[j] += 1
+                
+        a = max(res)
+        
+        return [ i for i in range(k) if res[i] == a]
+
+
+# solution 2
+from sortedcontainers import SortedList
+class Solution:
+    def getNextServer(self, index, sortedAvailableServers):
+        
+        nextIndex_Right_Of_Server = sortedAvailableServers.bisect_left(index)
+        
+        if nextIndex_Right_Of_Server != len(sortedAvailableServers):
+            return sortedAvailableServers[nextIndex_Right_Of_Server]
+        # no server greater than index found, more in cycle and 
+        #find the lowest available server now
+        lowestIdServerAvailable = sortedAvailableServers.bisect_left(0)
+        return sortedAvailableServers[lowestIdServerAvailable]
+        
+    def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
+        
+        heap = []
+        
+        sortedAvailableServers = SortedList([i for i in range(k)])
+        
+        count = collections.defaultdict(int)
+        
+        for i in range(len(arrival)):
+            arrivalTime, loadTime = arrival[i], load[i]
+            
+            while len(heap) > 0 and heap[0][0] <= arrivalTime:
+                _, serverId = heapq.heappop(heap)
+                sortedAvailableServers.add(serverId) # made a mistake here
+                
+                # check for any server available
+            if len(sortedAvailableServers) == 0:
+                continue
+                    
+            assignedServer = self.getNextServer(i % k, sortedAvailableServers)
+            count[assignedServer] += 1
+            sortedAvailableServers.remove(assignedServer)
+            heapq.heappush(heap, (arrivalTime + loadTime, assignedServer))
+                
+        maxRequestServedCount = max(count.values())
+        result = []
+        for serverId in count:
+            if count[serverId] == maxRequestServedCount:
+                result.append(serverId)
+                
+        return result
+        
