@@ -1,0 +1,25 @@
+class Solution:
+    def getRes(self, arr, t):
+        nums = [t if num >= t else num for num in arr]
+        return sum(nums)
+    
+    def findBestValue(self, arr: List[int], target: int) -> int:
+        l, h = 1, max(arr)
+        while l <= h:
+            mid = l + (h - l) // 2
+            curr = self.getRes(arr, mid)
+            
+            if curr == target:
+                return mid
+            elif curr < target:
+                l = mid + 1
+                
+            else:
+                h = mid - 1
+                
+        if abs(self.getRes(arr, l) - target) < abs(self.getRes(arr, h) - target):
+            return l
+        
+        return h
+            
+        
