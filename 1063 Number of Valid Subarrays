@@ -1,0 +1,26 @@
+class Solution:
+    def validSubarrays(self, nums: List[int]) -> int:
+       # brutal force
+        n = len(nums)
+        count = 0
+        result = 0
+        for i in range(n):
+            for j in range(i,n):
+                if nums[i] <= nums[j]:
+                    count = max(count, j - i + 1)
+                else:
+                    break
+            result += count 
+            count = 0                 
+        return result   
+    # solution 2: stack
+    def validSubarrays(self, nums):
+        nums.append(-inf)
+        stack = []
+        result = 0
+        for i, num in enumerate(nums):
+            while stack and nums[stack[-1]] > num:
+                result += i - stack.pop()        
+            stack.append(i)    
+        return result
+        
