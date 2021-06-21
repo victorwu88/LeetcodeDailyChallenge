@@ -1,0 +1,30 @@
+class Solution:
+    def mostCompetitive(self, nums: List[int], k: int) -> List[int]:
+        n = len(nums)
+        queue = collections.deque()
+        additionalCount = n - k
+        for i in range(n):
+            while queue and queue[-1] > nums[i] and additionalCount > 0:
+                queue.pop()
+                additionalCount -= 1
+                
+            queue.append(nums[i])
+        
+        result = [0] * k
+        for i in range(k):
+            result[i] = queue.popleft()
+       
+        return result
+            
+    #solution 2
+    def mostCompetitive(self, nums, k):
+        stack = []
+        attempts = len(nums) - k
+        for num in nums:
+            while stack and stack[-1] > num and attempts > 0:
+                stack.pop()
+                attempts -= 1
+                
+            stack.append(num)
+            
+        return stack[:k]
