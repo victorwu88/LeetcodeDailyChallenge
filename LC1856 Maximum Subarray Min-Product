@@ -1,0 +1,57 @@
+class Solution:
+    
+    def maxSumMinProduct(self, nums: List[int]) -> int:
+        n = len(nums)
+        left_bound, right_bound = [0] * n, [0] * n
+        st = []
+        for i in range(0, n):
+            while st and nums[st[-1]] >= nums[i]: st.pop()
+            if len(st) > 0:
+                left_bound[i] = st[-1] + 1
+            else:
+                left_bound[i] = 0
+            st.append(i)
+
+        st = []
+        for i in range(n - 1, -1, -1):
+            while st and nums[st[-1]] >= nums[i]: st.pop()
+            if len(st) > 0:
+                right_bound[i] = st[-1] - 1
+            else:
+                right_bound[i] = n - 1
+            st.append(i)
+
+        preSum = [0] * (n + 1)
+        for i in range(n):
+            preSum[i + 1] = preSum[i] + nums[i]
+
+        def getSum(left, right):  # left, right inclusive
+            return preSum[right + 1] - preSum[left]
+
+        maxProduct = 0
+        for i in range(n):
+            maxProduct = max(maxProduct, nums[i] * getSum(left_bound[i], right_bound[i]))
+        return maxProduct % (10**9 + 7)
+        
+        
+        # solution 2:
+    def maxSumMinProduct(self, nums: List[int]) -> int:
+		#apply some tricks to simplify the boundary condition checking.
+		#the first -1 makes sure the mono_stack is never empty; the last -1 make sure every element will be popped and computed
+        nums = [-1] + nums + [-1] 
+        mono_stack = [0] # mono increasing 
+        ans = 0
+        prefix = [0]
+        for n in nums:
+            prefix.append(prefix[-1]+n)
+            
+        for i, n in enumerate(nums[1:],1):
+            while n < nums[mono_stack[-1]]:
+                left = mono_stack.pop()
+                psum = prefix[i] - prefix[mono_stack[-1]+1] # important to +1 here... it is non inclusive boundary
+                height = nums[left]
+                ans = max(ans, psum*height )
+            
+            mono_stack.append(i)
+        
+        return ans%(10**9+7)
