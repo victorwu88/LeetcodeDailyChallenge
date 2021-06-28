@@ -1,0 +1,49 @@
+class Solution:
+    def findRLEArray(self, encoded1: List[List[int]], encoded2: List[List[int]]) -> List[List[int]]:
+       
+        product_encoded = []
+    
+        e1_index = 0
+        e2_index = 0
+    
+        while e1_index < len(encoded1) and e2_index < len(encoded2):
+            e1_val, e1_freq = encoded1[e1_index]
+            e2_val, e2_freq = encoded2[e2_index]
+
+            product_val = e1_val * e2_val
+            product_freq = min(e1_freq, e2_freq)
+
+            encoded1[e1_index][1] -= product_freq
+            encoded2[e2_index][1] -= product_freq
+
+            if encoded1[e1_index][1] == 0:
+                e1_index += 1
+
+            if encoded2[e2_index][1] == 0:
+                e2_index += 1
+
+            if not product_encoded or product_encoded[-1][0] != product_val:
+                product_encoded.append([product_val, product_freq])
+            else:
+                product_encoded[-1][1] += product_freq
+
+        return product_encoded
+        #solution 2:
+        # copy from the solutions submitted
+        prodNums = []
+        while encoded1 and encoded2:
+            v1, f1 = encoded1.pop()
+            v2, f2 = encoded2.pop()
+            v = v1 * v2
+            if f1 > f2:
+                encoded1 += [[v1, f1 - f2]]
+            elif f2 > f1:
+                encoded2 += [[v2, f2 - f1]]
+
+            if prodNums and prodNums[-1][0] == v:
+                prodNums[-1][1] += min(f1, f2)
+
+            else:
+                prodNums += [[v, min(f1, f2)]]
+
+        return prodNums[::-1]
