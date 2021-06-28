@@ -1,0 +1,33 @@
+class Solution:
+    def maxSum(self, nums1: List[int], nums2: List[int]) -> int:
+        mod = 10 ** 9 + 7
+        i, j, n, m = 0, 0, len(nums1), len(nums2)
+        res = 0
+        sm1, sm2 = 0, 0 # sm1 store sum of segment in nums1, sm2 store sum of segment in nums2
+        
+        while i < n and j < m:
+            if nums1[i] < nums2[j]:
+                sm1 += nums1[i]
+                i += 1
+                
+            elif nums1[i] > nums2[j]:
+                sm2 += nums2[j]
+                j += 1
+                
+            else:
+                res += max(sm1, sm2) + nums1[i]
+                i += 1
+                j += 1
+                sm1 = sm2 = 0
+                
+        while i < n: # just in case nums1 still have elements
+            sm1 += nums1[i]
+            i += 1
+            
+        while j < m:
+            sm2 += nums2[j]
+            j += 1
+            
+        res += max(sm1, sm2)
+        
+        return res % mod
