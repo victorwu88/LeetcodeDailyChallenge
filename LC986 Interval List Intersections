@@ -1,0 +1,49 @@
+class Solution:
+    def intervalIntersection(self, firstList: List[List[int]], secondList: List[List[int]]) -> List[List[int]]:
+        
+        # solution1: brute force, O(n*m)
+        n, m = len(firstList), len(secondList)
+        
+        res = []
+        if m * n == 0:
+            return res
+        
+        for i in range(n):
+            start, end = firstList[i][0], firstList[i][1]
+            for j in range(m):
+                start_j, end_j = secondList[j][0], secondList[j][1]
+                if start <= start_j <= end and start <= end_j <= end:
+                    res.append([start_j, end_j])
+                    
+                elif start <= start_j <= end and end_j > end:
+                    res.append([start_j, end])
+                    
+                elif start_j <= start and start <= end_j <= end:
+                    res.append([start, end_j])
+                elif start >= start_j and end <= end_j:
+                    res.append([start, end])
+                    
+                elif end_j < start or start_j > end:
+                    continue
+                    
+        return res
+    # solution 2: two pointer, merge intervals #
+    
+    def intervalIntersection(self, firstList, secondList):
+        ans = []
+        i = j = 0
+        
+        while i < len(firstList) and j < len(secondList):
+            lo = max(firstList[i][0], secondList[j][0])
+            hi = min(firstList[i][1], secondList[j][1])
+            if lo <= hi:
+                ans.append([lo, hi])
+                
+            # remove the interval with the smallest endpoint
+            if firstList[i][1] < secondList[j][1]:
+                i += 1
+            else:
+                j += 1
+                
+        return ans
+        
