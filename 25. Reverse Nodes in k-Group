@@ -1,0 +1,109 @@
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+       
+    def reverseLinkedList(self, head, k):
+        # reverse k nodes of the given linked list
+        new_head, ptr = None, head
+        while k:
+            # keep track of the next node to process in the 
+            # original list
+            next_node = ptr.next
+            
+            # insert the node pointed to by "ptr"
+            # at the beginning of the reversed list
+            ptr.next = new_head
+            new_head = ptr
+            
+            # move on to the next node
+            ptr = next_node
+            
+            #decrement the count of nodes to be reversed by 1
+            k -= 1
+            
+            
+        # return the head of the reversed list
+        return new_head
+    
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+            
+            count = 0
+            ptr = head
+            
+            # first, see if there are at least k nodes
+            # left in the linked list
+            while count < k and ptr:
+                ptr = ptr.next
+                count += 1
+                
+            # if we have k nodes, then we reverse them
+            if count == k:
+                
+                # reverse the first k nodes of the list and 
+                # get the reversed list's head
+                reversedHead = self.reverseLinkedList(head, k)
+                
+                # now recurse on the remaining linked list
+                #since our recursion returns the head of the overall processed
+                #list, we use that and the "orginal" head of the "k" nodes
+                # to re-wire the connections
+                head.next = self.reverseKGroup(ptr, k)
+                return reversedHead
+            return head
+        
+        
+        # solution 2: iteration
+        def reverseLinkedList(self, head, k):
+            new_head, ptr = None, head
+            while k:
+                next_node = ptr.next
+                ptr.next = new_head
+                new_head = ptr
+                
+                ptr = next_node
+                
+                k -= 1
+                
+            return new_head
+        
+        def reverseKGroup(self, head, k):
+            ptr = head
+            ktail = None
+            
+            # head of the final, modified linked list
+            new_head = None
+            # keep going until there are nodes in the list
+            while ptr:
+                count = 0
+                
+                # start counting nodes from the head
+                ptr = head
+                
+                while count < k and ptr:
+                    ptr = ptr.nextcount += 1
+                    
+                if count == k:
+                    
+                    # reverse k nodes and get the new head
+                    revHead = self.reverseLinkedList(head, k)
+                    
+                    # new_head is the head of the final linked list
+                    if not new_head:
+                        new_head = revHead
+                        
+                    #ktail is the tail of the previous block
+                    # of reversed k nodes
+                    if ktail:
+                        ktail.next = revHead
+                        
+                    ktail = head
+                    head = ptr # I don't quite understand this step
+                    
+                #attach the final, possibly un-reversed portion
+                if ktail:
+                    ktail.next = head
+                    
+                return new_head if new_head else head
