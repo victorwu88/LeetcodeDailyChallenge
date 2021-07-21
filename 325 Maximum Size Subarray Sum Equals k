@@ -1,0 +1,31 @@
+class Solution:
+    def maxSubArrayLen(self, nums: List[int], k: int) -> int:
+       
+        # brute force
+        n = len(nums)
+        out = []
+        total = 0
+        if n == 1 and nums[0] == k:
+            return 1
+        if n == 0 and k != 0:
+            return 0
+        for i in range(n):
+            for j in range(i, n):
+                if sum(nums[i:j+1]) == k:
+                    total = j - i + 1
+                    out.append(total)
+                    
+        return max(out) if out else 0
+       
+        # hash table
+        acc, ans = 0, 0
+        hp = {0: -1} # accumulative value as "key", "index" as "value"
+        for i in range(len(nums)):
+            acc += nums[i]
+            if acc not in hp:
+                hp[acc] = i
+                
+            if acc - k in hp:
+                ans = max(ans, i - hp[acc - k])
+                
+        return ans
