@@ -1,0 +1,31 @@
+class Solution:
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        
+        if k == 1: return True
+        n = len(nums)
+        if n < k: return False
+        total = sum(nums)
+        if total % k: return False
+        target = total / k
+        seen = [0] * n
+        nums.sort(reverse = True)
+        
+        def dfs(k, index, cur_sum):
+            
+            if k == 1: return True
+            
+            if cur_sum == target:
+                return dfs(k-1, 0, 0)
+            
+            for i in range(index, n):
+                if not seen[i] and cur_sum <= target:
+                    seen[i] = 1
+                    # recursively build group from i + 1
+                    if dfs(k, i+1, cur_sum + nums[i]):
+                        return True
+                    
+                    seen[i] = 0
+                    
+            return False
+        
+        return dfs(k, 0, 0)
