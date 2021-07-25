@@ -1,0 +1,50 @@
+class Solution:
+    def minimumIncompatibility(self, nums: List[int], k: int) -> int:
+        f = Counter(nums)
+        if any(f[num] > k for num in f):
+            return -1
+        bags = [[] for i in range(k)]
+        res = float("inf")
+        n = len(nums)
+        M = n // k
+        nums.sort()
+		
+		###precalculate gaps_sum for pruning
+        s = 0
+        cur = []
+        numbers = sorted(f.keys())
+        gaps = defaultdict(int)
+        gaps_sum =defaultdict(int)
+        for i in range(1,len(numbers)):
+            gaps[numbers[i]] = numbers[i] - numbers[i-1]
+        for i in range(n-1,-1,-1):
+            cur.append(gaps[nums[i]])
+            cur.sort()
+            s += gaps[nums[i]]
+            gaps_sum[i,0] = s
+            for empty in range(1,min(k+1,len(cur))):
+                gaps_sum[i,empty] = gaps_sum[i,empty-1] - cur[-empty]
+        
+		### DFS put #i number in #j bag
+        def DFS(i,cur_res,empty_bags):
+            nonlocal res
+            if i == n:
+                res = min(res,cur_res)
+                return
+            if cur_res + gaps_sum[i,empty_bags] >= res  : 
+                return 
+            
+            for j in range(k):
+				### skip when 1. encounter same combination 2. avoid duplicate # number in some bags 3. bag is full
+                if (j > 0 and bags[j] == bags[j-1]) or (bags[j] and bags[j][-1] == nums[i]) or (len(bags[j]) == M):
+                    continue
+                else:
+                    bags[j].append(nums[i])
+                    if len(bags[j]) == 1:
+                        DFS(i+1,cur_res,empty_bags-1)
+                    else:
+                        DFS(i+1,cur_res+bags[j][-1]-bags[j][-2],empty_bags)
+                    bags[j].pop()                
+        DFS(0,0,k)
+        return res
+        
