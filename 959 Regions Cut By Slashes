@@ -1,0 +1,56 @@
+class Solution:
+    # modified from Haifeng cpp solution
+    def regionsBySlashes(self, grid: List[str]) -> int:
+        N = len(grid)
+        
+        self.Father = [0] * (N + 1) * (N + 1)
+        
+        
+        for i in range(N + 1):
+            for j in range(N + 1):
+                idx = i * (N + 1) + j
+                self.Father[idx] = idx
+                if i == 0 or i == N or j == 0 or j == N:
+                    self.Father[idx] = 0
+        
+        count = 1
+        for i in range(N):
+            for j in range(N):
+                
+                if grid[i][j] == " ":
+                    continue
+                    
+                a = b = 0
+                if grid[i][j] == '/':
+                    a = i * (N + 1) + (j + 1)
+                    b = (i + 1) * (N + 1) + j
+                    
+                elif grid[i][j] == '\\':
+                    a = i * (N + 1) + j
+                    b = (i + 1) * (N + 1) + (j + 1)
+                    
+                if self.FindFather(a) == self.FindFather(b):
+                    count += 1
+                    
+                else:
+                    self.Union(a, b)
+                    
+        return count
+    
+    def FindFather(self, x):
+        
+        if self.Father[x] != x:
+            self.Father[x] = self.FindFather(self.Father[x])
+            
+        return self.Father[x]
+    
+    def Union(self, x, y):
+        
+        x = self.Father[x]
+        y = self.Father[y]
+        if x < y:
+            self.Father[y] = x
+            
+        else:
+            self.Father[x] = y
+        
