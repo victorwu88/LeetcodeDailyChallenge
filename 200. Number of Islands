@@ -1,0 +1,105 @@
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+            
+        if not grid or len(grid) == 0:
+            return 0
+        
+        nr, nc = len(grid), len(grid[0])
+        num_islands = 0
+        for r in range(nr):
+            for c in range(nc):
+                if grid[r][c] == '1':
+                    num_islands += 1
+                    self.dfs(grid, r, c)
+                    
+        return num_islands
+    
+    def  dfs(self, grid, r, c):
+            
+            nr, nc = len(grid), len(grid[0])
+            
+            if r < 0 or c < 0 or r >= nr or c >= nc or grid[r][c] == '0':
+                return 0
+            
+            grid[r][c] = '0'
+            
+            self.dfs(grid, r - 1, c)
+            self.dfs(grid, r + 1, c)
+            self.dfs(grid, r, c + 1)
+            self.dfs(grid, r, c - 1)
+ 
+            
+            
+    # solution 2: BFS
+    def numIslands(self, grid):
+        if not grid or len(grid) == 0:
+            return 0
+        
+        nr, nc = len(grid), len(grid[0])
+        num_islands = 0
+        
+        for r in range(nr):
+            for c in range(nc):
+                if grid[r][c] == '1':
+                    num_islands += 1
+                    
+                    grid[r][c] = '0' # mark as visited
+                    neighbors = []
+                    neighbors.append(r * nc + c)
+                    while neighbors:
+                        id = neighbors.pop()
+                        row = id // nc
+                        col = id % nc
+                        if row - 1 >= 0 and grid[row - 1][col] == '1':
+                            neighbors.append((row - 1) * nc + col)
+                            grid[row - 1][col] = '0'
+                            
+                        if row + 1 < nr and grid[row + 1][col] == '1':
+                            neighbors.append((row + 1) * nc + col)
+                            grid[row + 1][col] = '0'
+                            
+                        if col - 1 >= 0 and grid[row][col - 1] == '1':
+                            neighbors.append(row * nc + col - 1)
+                            grid[row][col - 1] = '0'
+                            
+                        if col + 1 < nc and grid[row][col + 1] == '1':
+                            neighbors.append(row * nc + col + 1)
+                            grid[row][col + 1] = '0'
+                            
+        return num_islands
+    
+    # solution Union Find (aka Disjoint set)
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        if len(grid) == 0: return 0
+        rows = len(grid); cols = len(grid[0])
+        self.count = sum(grid[i][j] == '1' for i in range(rows) for j in range(cols))
+        parent = list(range(rows*cols))
+        rank = [0] * rows*cols
+        
+        def find(x: int) -> int:
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x: int, y: int) -> None:
+            xroot = find(x)
+            yroot = find(y)
+            if xroot == yroot: return 
+            if rank[xroot] < rank[yroot]:
+                xroot, yroot = yroot, xroot
+            parent[yroot] = xroot
+            rank[xroot] = max(rank[xroot], rank[yroot]+1)
+            self.count -= 1
+        
+        for i in range(rows):
+            for j in range(cols):
+                if grid[i][j] == '0':
+                    continue
+                index = i*cols + j
+                if j < cols-1 and grid[i][j+1] == '1':
+                    union(index, index+1)
+                if i < rows-1 and grid[i+1][j] == '1':
+                    union(index, index+cols)
+        return self.count
+    
