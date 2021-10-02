@@ -1,0 +1,25 @@
+class Solution:
+    def findTargetSumWays(self, nums, target):
+        index = len(nums) - 1
+        cur_sum = 0
+        return self.dp(nums, target, index, cur_sum)
+    
+    def dp(self, nums, target, index, cur_sum):
+        
+        # base cases
+        if index < 0 and cur_sum == target:
+            return 1
+        if index < 0:
+            return 0
+        
+        # decisions
+        positive = self.dp(nums, target, index - 1, cur_sum + nums[index])
+        negative = self.dp(nums, target, index - 1, cur_sum - nums[index])
+        
+        return positive + negative
+    
+if __name__ == '__main__':
+    LC_494 = Solution()
+    nums = [1,1,1,1,2,3,4,1,1]
+    target = 5
+    print(LC_494.findTargetSumWays(nums, target))
